@@ -23,6 +23,9 @@ public class GatewayConfig {
                 .route(p -> p
                         .path("/currency/**")
                         .uri("lb://currency-service"))
+                .route(p -> p
+                        .path("/auth/**")
+                        .uri("lb://auth-service"))
                 .build();
     }
 }
