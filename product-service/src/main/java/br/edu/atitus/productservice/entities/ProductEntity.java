@@ -17,6 +17,17 @@ public class ProductEntity {
     private Double price;
     private Integer stock;
 
+    @Column(name = "image_url")
+    private String imageURL;
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
     public Long getId() {
         return id;
     }

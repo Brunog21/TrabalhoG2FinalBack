@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("products")
+@RequestMapping("ws/products")
 public class ProductController {
 
     private final ProductRepository repository;
@@ -72,6 +72,7 @@ public class ProductController {
                 entity.getCurrency(),
                 entity.getPrice(),
                 entity.getStock(),
+                entity.getImageURL(),
                 convertedPrice,
                 environment,
                 requestCurrency

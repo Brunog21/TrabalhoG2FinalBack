@@ -15,7 +15,7 @@ public class GatewayConfig {
                 .route(p -> p
                         .path("/get")
                         .filters(f -> f
-                                .addRequestHeader("X-User-Name", "Teste"))
+                                .addRequestHeader("X-User-Name", "Pedro"))
                         .uri("http://httpbin.org"))
                 .route(p -> p
                         .path("/products/**")
