@@ -12,6 +12,7 @@
         <module name="currency-service" />
         <module name="gateway-service" />
         <module name="product-service" />
+        <module name="order-service" />
         <module name="discovery-service" />
       </profile>
     </annotationProcessing>
@@ -24,6 +25,7 @@
       <module name="discovery-service" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
       <module name="greeting-service" options="-parameters" />
+      <module name="order-service" options="-parameters" />
       <module name="product-service" options="-parameters" />
     </option>
   </component>
