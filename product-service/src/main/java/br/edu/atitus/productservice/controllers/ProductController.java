@@ -43,15 +43,14 @@ public class ProductController {
         String environment = "Product-service running on port: " + port;
         String requestCurrency = targetCurrency;
 
-
         if (targetCurrency.equals(entity.getCurrency())) {
             convertedPrice = entity.getPrice();
         } else {
-            String nameCache="ConvertedValue";
-            String keyCache= entity.getCurrency() + "-" +  targetCurrency;
+            String nameCache = "ConvertedValue";
+            String keyCache = entity.getCurrency() + "-" + targetCurrency;
             Double convertedValue = cacheManager.getCache(nameCache).get(keyCache, Double.class);
-            //convertedValue=null; //Para testar sem cache
-            if (convertedValue == null){
+            // convertedValue=null; //Para testar sem cache
+            if (convertedValue == null) {
                 CurrencyResponse currency = currencyClient.getCurrency(entity.getCurrency(), targetCurrency);
                 if (currency != null) {
                     convertedPrice = currency.conversionRate() * entity.getPrice();
@@ -67,7 +66,6 @@ public class ProductController {
             }
         }
 
-
         ProductDTO dto = new ProductDTO(
                 entity.getId(),
                 entity.getDescription(),
@@ -79,8 +77,7 @@ public class ProductController {
                 entity.getImageURL(),
                 convertedPrice,
                 environment,
-                requestCurrency
-        );
+                requestCurrency);
 
         return ResponseEntity.ok(dto);
     }
@@ -101,8 +98,7 @@ public class ProductController {
                 product.getImageURL(),
                 -1.,
                 "Product-service running on port: " + port,
-                null
-        );
+                null);
 
         return ResponseEntity.ok(dto);
     }
@@ -110,12 +106,10 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<Page<ProductDTO>> getAllProducts(
             @RequestParam String targetCurrency,
-            @PageableDefault(
-                    page = 0,
-                    size = 5,
-                    sort = "description",
-                    direction = Sort.Direction.ASC
-            ) Pageable pageable) throws Exception {
+            @PageableDefault(page = 0, size = 5, sort = "description", direction = Sort.Direction.ASC) Pageable pageable)
+            throws Exception {
+
+        final String finalTargetCurrency = targetCurrency.toUpperCase();
 
         Page<ProductEntity> products = repository.findAll(pageable);
 
@@ -124,35 +118,31 @@ public class ProductController {
             String environment = "Product-service running on port: " + port;
             Double convertedPrice = null;
 
-            if (targetCurrency.equals(product.getCurrency())) {
+            if (finalTargetCurrency.equals(product.getCurrency())) {
 
                 convertedPrice = product.getPrice();
 
             } else {
 
                 String nameCache = "ConvertedValue";
-                String keyCache = product.getCurrency() + "-" + targetCurrency;
+                String keyCache = product.getCurrency() + "-" + finalTargetCurrency;
 
-                Double convertedValue = null;
+                Double convertedValue = cacheManager.getCache(nameCache).get(keyCache, Double.class);
 
                 if (convertedValue == null) {
 
-                    CurrencyResponse currency =
-                            currencyClient.getCurrency(
-                                    product.getCurrency(),
-                                    targetCurrency
-                            );
+                    CurrencyResponse currency = currencyClient.getCurrency(
+                            product.getCurrency(),
+                            finalTargetCurrency);
 
                     if (currency != null) {
 
-                        convertedPrice =
-                                currency.conversionRate() *
-                                        product.getPrice();
+                        convertedPrice = currency.conversionRate() *
+                                product.getPrice();
 
-                        environment =
-                                environment +
-                                        " - " +
-                                        currency.environment();
+                        environment = environment +
+                                " - " +
+                                currency.environment();
 
                         cacheManager
                                 .getCache(nameCache)
@@ -161,20 +151,17 @@ public class ProductController {
                     } else {
 
                         convertedPrice = -1.0;
-                        environment =
-                                environment +
-                                        " - Currency Fallback";
+                        environment = environment +
+                                " - Currency Fallback";
                     }
 
                 } else {
 
-                    convertedPrice =
-                            convertedValue *
-                                    product.getPrice();
+                    convertedPrice = convertedValue *
+                            product.getPrice();
 
-                    environment =
-                            environment +
-                                    " - Currency in cache";
+                    environment = environment +
+                            " - Currency in cache";
                 }
             }
 
@@ -189,15 +176,14 @@ public class ProductController {
                     product.getImageURL(),
                     convertedPrice,
                     environment,
-                    targetCurrency
-            );
+                    targetCurrency);
         });
 
         return ResponseEntity.ok(productDTOs);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e){
+    public ResponseEntity<String> handleException(Exception e) {
         String message = e.getMessage().replace("/r/n", "");
         return ResponseEntity.badRequest().body(message);
     }

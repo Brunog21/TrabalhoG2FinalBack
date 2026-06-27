@@ -1,4 +1,4 @@
-CREATE TABLE tb_currency (
+CREATE TABLE IF NOT EXISTS tb_currency (
          id SERIAL PRIMARY KEY,
          source_currency CHAR(3) NOT NULL,
          target_currency CHAR(3) NOT NULL,

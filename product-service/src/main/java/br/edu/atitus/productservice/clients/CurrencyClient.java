@@ -11,6 +11,6 @@ public interface CurrencyClient {
     @GetMapping("/currency/convert")
     @Retry(name = "currency-service")
     CurrencyResponse getCurrency(
-            @RequestParam String source,
-            @RequestParam String target);
+            @RequestParam("source") String source,
+            @RequestParam("target") String target);
 }

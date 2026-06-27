@@ -29,8 +29,8 @@ public class CurrencyController {
 
     @GetMapping("/convert")
     public ResponseEntity<CurrencyDTO> getCurrency(
-            @RequestParam String source,
-            @RequestParam String target) {
+            @RequestParam("source") String source,
+            @RequestParam("target") String target) {
 
         // Busca usando o método que realmente existe no repositório
         CurrencyEntity currencyEntity = currencyRepository.findBySourceCurrencyAndTargetCurrency(source, target)
@@ -59,7 +59,8 @@ public class CurrencyController {
 
         Double finalRate = (cotacaoBcb != null) ? cotacaoBcb : currencyEntity.getConversionRate();
 
-        // Usa o DTO para retornar os dados para evitar erros de set em propriedades que não existem na Entity
+        // Usa o DTO para retornar os dados para evitar erros de set em propriedades que
+        // não existem na Entity
         CurrencyDTO dto = new CurrencyDTO(source, target, finalRate, port);
 
         return ResponseEntity.ok(dto);
