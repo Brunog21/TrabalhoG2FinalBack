@@ -24,6 +24,11 @@ public class AuthFilter implements GlobalFilter, Ordered {
         var request = exchange.getRequest();
         String path = request.getURI().getPath();
 
+        // Requisições OPTIONS (preflight de CORS) devem passar sem validação de JWT
+        if (request.getMethod().name().equalsIgnoreCase("OPTIONS")) {
+            return chain.filter(exchange);
+        }
+
         if(!PROTECTED_ROUTES.stream().anyMatch(path::startsWith)){
             return chain.filter(exchange);
         }

@@ -1,5 +1,5 @@
 # Etapa de build
-FROM maven:3-eclipse-temurin-25-alpine AS build
+FROM maven:3-eclipse-temurin-21-alpine AS build
 
 # Define o diretório de trabalho
 WORKDIR /app
@@ -12,7 +12,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa final, com imagem JRE mais enxuta
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Copia apenas o JAR gerado da etapa de build
 COPY --from=build /app/target/*.jar /app/app.jar

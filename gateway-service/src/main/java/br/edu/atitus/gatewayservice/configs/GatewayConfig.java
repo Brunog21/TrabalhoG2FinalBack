@@ -15,26 +15,34 @@ public class GatewayConfig {
                 .route(p -> p
                         .path("/get")
                         .filters(f -> f
-                                .addRequestHeader("X-User-Name", "Pedro"))
+                                .addRequestHeader("X-User-Name", "Pedro")
+                                .dedupeResponseHeader("Access-Control-Allow-Origin Access-Control-Allow-Credentials", "RETAIN_UNIQUE"))
                         .uri("http://httpbin.org"))
                 .route(p -> p
                         .path("/products/**")
+                        .filters(f -> f.dedupeResponseHeader("Access-Control-Allow-Origin Access-Control-Allow-Credentials", "RETAIN_UNIQUE"))
                         .uri("lb://product-service"))
                 .route(p -> p
                         .path("/ws/products/**")
+                        .filters(f -> f.dedupeResponseHeader("Access-Control-Allow-Origin Access-Control-Allow-Credentials", "RETAIN_UNIQUE"))
                         .uri("lb://product-service"))
                 .route(p -> p
                         .path("/currency/**")
+                        .filters(f -> f.dedupeResponseHeader("Access-Control-Allow-Origin Access-Control-Allow-Credentials", "RETAIN_UNIQUE"))
                         .uri("lb://currency-service"))
                 .route(p -> p
                         .path("/ws/currency/**")
+                        .filters(f -> f.dedupeResponseHeader("Access-Control-Allow-Origin Access-Control-Allow-Credentials", "RETAIN_UNIQUE"))
                         .uri("lb://currency-service"))
                 .route(p -> p
                         .path("/auth/**")
+                        .filters(f -> f.dedupeResponseHeader("Access-Control-Allow-Origin Access-Control-Allow-Credentials", "RETAIN_UNIQUE"))
                         .uri("lb://auth-service"))
                 .route(p -> p
                         .path("/ws/orders/**")
+                        .filters(f -> f.dedupeResponseHeader("Access-Control-Allow-Origin Access-Control-Allow-Credentials", "RETAIN_UNIQUE"))
                         .uri("lb://order-service"))
                 .build();
     }
+
 }
