@@ -63,6 +63,7 @@ class OrderControllerTest {
         System.out.println("[DEBUG] === Teste 1: createOrder retorna 201 ===");
 
         when(productClient.getProductById(1L)).thenReturn(productResponse);
+        when(orderService.createOrder(any(OrderEntity.class), eq(1L))).thenAnswer(i -> i.getArgument(0));
 
         OrderDTO dto = new OrderDTO(List.of(new OrderItemDTO(1L, 2)));
 

@@ -70,6 +70,7 @@ class OrderControllerMvcTest {
         System.out.println("[DEBUG] === Teste 1: POST /ws/orders com headers válidos ===");
 
         given(productClient.getProductById(1L)).willReturn(novoProduct());
+        given(orderService.createOrder(any(OrderEntity.class), eq(1L))).willAnswer(i -> i.getArgument(0));
 
         mockMvc.perform(post("/ws/orders")
                         .contentType(MediaType.APPLICATION_JSON)

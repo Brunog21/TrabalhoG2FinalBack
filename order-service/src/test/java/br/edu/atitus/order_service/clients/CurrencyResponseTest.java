@@ -20,7 +20,7 @@ class CurrencyResponseTest {
         assertNull(response.getTargetCurrency(),  "targetCurrency deve ser null");
         assertEquals(0.0, response.getConversionRate(), 0.0001,
                 "conversionRate deve ser 0.0 por padrão");
-        assertNull(response.getEnviroment(), "enviroment deve ser null");
+        assertNull(response.getEnvironment(), "environment deve ser null");
 
         System.out.println("[DEBUG] ✓ CurrencyResponse instanciado com valores padrão");
     }
@@ -62,15 +62,15 @@ class CurrencyResponseTest {
     }
 
     @Test
-    @DisplayName("setEnviroment e getEnviroment funcionam (typo preservado no código de produção)")
-    void deveSetarEObterEnviroment() {
-        System.out.println("[DEBUG] Testando campo 'enviroment' (typo do código de produção)...");
+    @DisplayName("setEnvironment e getEnvironment funcionam")
+    void deveSetarEObterEnvironment() {
+        System.out.println("[DEBUG] Testando campo 'environment'...");
 
         CurrencyResponse response = new CurrencyResponse();
-        response.setEnviroment("currency-port-8001");
+        response.setEnvironment("currency-port-8001");
 
-        assertEquals("currency-port-8001", response.getEnviroment());
-        System.out.println("[DEBUG] ✓ enviroment: " + response.getEnviroment());
+        assertEquals("currency-port-8001", response.getEnvironment());
+        System.out.println("[DEBUG] ✓ environment: " + response.getEnvironment());
     }
 
     @Test
@@ -82,13 +82,13 @@ class CurrencyResponseTest {
         r1.setSourceCurrency("USD");
         r1.setTargetCurrency("BRL");
         r1.setConversionRate(5.75);
-        r1.setEnviroment("env-1");
+        r1.setEnvironment("env-1");
 
         CurrencyResponse r2 = new CurrencyResponse();
         r2.setSourceCurrency("EUR");
         r2.setTargetCurrency("JPY");
         r2.setConversionRate(160.0);
-        r2.setEnviroment("env-2");
+        r2.setEnvironment("env-2");
 
         assertEquals("USD", r1.getSourceCurrency());
         assertEquals("EUR", r2.getSourceCurrency());
@@ -96,8 +96,8 @@ class CurrencyResponseTest {
         assertEquals("JPY", r2.getTargetCurrency());
         assertEquals(5.75,  r1.getConversionRate(), 0.001);
         assertEquals(160.0, r2.getConversionRate(), 0.001);
-        assertEquals("env-1", r1.getEnviroment());
-        assertEquals("env-2", r2.getEnviroment());
+        assertEquals("env-1", r1.getEnvironment());
+        assertEquals("env-2", r2.getEnvironment());
 
         System.out.println("[DEBUG] ✓ r1=USD/BRL/5.75 | r2=EUR/JPY/160.0 — independentes");
     }
