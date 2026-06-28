@@ -41,19 +41,21 @@ public class CurrencyController {
         String nameCache = "bcb-currency";
         Double cotacaoBcb = null;
 
-        var cacheInfo = cacheManager.getCache(nameCache).get(source);
+        if ("BRL".equalsIgnoreCase(target)) {
+            var cacheInfo = cacheManager.getCache(nameCache).get(source);
 
-        if (cacheInfo != null) {
-            cotacaoBcb = (Double) cacheInfo.get();
-            port += " - BCB in cache";
-        } else {
-            BCBResponse response = bcbClient.getCotacaoBcb(source, dataFixaCotacao);
-
-            if (response != null && response.getValue() != null && !response.getValue().isEmpty()) {
-                cotacaoBcb = response.getValue().get(0).getCotacaoVenda();
-                cacheManager.getCache(nameCache).put(source, cotacaoBcb);
+            if (cacheInfo != null) {
+                cotacaoBcb = (Double) cacheInfo.get();
+                port += " - BCB in cache";
             } else {
-                port += " - BCB Fallback";
+                BCBResponse response = bcbClient.getCotacaoBcb(source, dataFixaCotacao);
+
+                if (response != null && response.getValue() != null && !response.getValue().isEmpty()) {
+                    cotacaoBcb = response.getValue().get(0).getCotacaoVenda();
+                    cacheManager.getCache(nameCache).put(source, cotacaoBcb);
+                } else {
+                    port += " - BCB Fallback";
+                }
             }
         }
 
