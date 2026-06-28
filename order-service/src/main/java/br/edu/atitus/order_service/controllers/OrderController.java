@@ -46,12 +46,9 @@ public class OrderController {
             item.setProductId(dto.productId());
             item.setQuantity(dto.quantity());
 
-            // Busca os dados do produto via FeignClient para obter preço, descrição, etc
             ProductResponse product = productClient.getProductById(dto.productId());
             item.setPriceAtPurchase(product.price());
             item.setCurrencyAtPurchase(product.currency());
-
-            // Preenche o product transient para retorno
             item.setProduct(product);
 
             item.setOrder(order);
@@ -59,16 +56,38 @@ public class OrderController {
         }).toList();
 
         order.setItems(items);
-		
-		
-		orderService.createOrder(order, userId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(order);
+
+		OrderEntity saved = orderService.createOrder(order, userId);
+		return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+	}
+
+	@GetMapping("/admin")
+	public ResponseEntity<Page<OrderEntity>> listAllOrdersForAdmin(
+			@RequestParam String targetCurrency,
+			@PageableDefault(page = 0, size = 100, sort = "orderDate", direction = Direction.DESC)
+				Pageable pageable,
+			@RequestHeader("X-User-Type") Integer userType) {
+		orderService.requireAdmin(userType);
+		targetCurrency = targetCurrency.toUpperCase();
+		Page<OrderEntity> orders = orderService.findAllOrders(targetCurrency, pageable);
+		return ResponseEntity.ok(orders);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<OrderEntity> getOrderById(
+			@PathVariable Long id,
+			@RequestParam String targetCurrency,
+			@RequestHeader("X-User-Id") Long userId) {
+		targetCurrency = targetCurrency.toUpperCase();
+		return orderService.findOrderById(id, userId, targetCurrency)
+				.map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@GetMapping
 	public ResponseEntity<Page<OrderEntity>> listOrdersByUser(
 			@RequestParam String targetCurrency,
-			@PageableDefault(page = 0,size = 5,sort = "orderDate", direction = Direction.ASC) 
+			@PageableDefault(page = 0,size = 5,sort = "orderDate", direction = Direction.DESC) 
 				Pageable pageable,
 			@RequestHeader("X-User-Id") Long userId,
 			 @RequestHeader("X-User-Email") String userEmail,

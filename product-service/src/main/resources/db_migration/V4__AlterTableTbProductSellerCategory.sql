@@ -1,0 +1,2 @@
+﻿ALTER TABLE tb_product ADD COLUMN IF NOT EXISTS seller_id BIGINT;
+ALTER TABLE tb_product ADD COLUMN IF NOT EXISTS category_id INTEGER;

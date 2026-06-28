@@ -41,7 +41,8 @@ class WsProductControllerTest {
                 "iPhone 15",
                 "USD",
                 799.00,
-                "https://example.com/iphone.jpg"
+                "https://example.com/iphone.jpg",
+                1
         );
 
         savedEntity = new ProductEntity();

@@ -11,7 +11,9 @@ public record ProductDTO(
         String imageURL,
         Double convertedPrice,
         String environment,
-        String requestCurrency
+        String requestCurrency,
+        Integer categoryId,
+        Long sellerId
 
 ) {
 }

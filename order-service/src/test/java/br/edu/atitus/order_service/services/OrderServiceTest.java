@@ -80,14 +80,14 @@ class OrderServiceTest {
     }
 
     @Test
-    @DisplayName("createOrder delega ao repository.save e retorna a order persistida")
+    @DisplayName("createOrder debita estoque, salva pedido e não restaura em caso de sucesso")
     void createOrder_DeveDelegarParaRepository() {
         System.out.println("[DEBUG] === Teste 1: createOrder delega ao repository ===");
 
         OrderEntity orderASalvar = new OrderEntity();
         orderASalvar.setCustomerId(1L);
         orderASalvar.setOrderDate(LocalDateTime.now());
-        orderASalvar.setItems(new ArrayList<>());
+        orderASalvar.setItems(new ArrayList<>(List.of(item)));
 
         OrderEntity orderSalva = new OrderEntity();
         orderSalva.setId(10L);
@@ -99,8 +99,10 @@ class OrderServiceTest {
 
         assertNotNull(result);
         assertEquals(10L, result.getId());
+        verify(productClient, times(1)).debitStock(any());
         verify(orderRepository, times(1)).save(orderASalvar);
-        verifyNoInteractions(productClient, currencyClient);
+        verify(productClient, never()).restoreStock(any());
+        verifyNoInteractions(currencyClient);
 
         System.out.println("[DEBUG] ✓ createOrder delegou para repository.save | ID=" + result.getId());
     }
@@ -188,5 +190,57 @@ class OrderServiceTest {
 
         System.out.println("[DEBUG] ✓ ProductClient chamado 1x | CurrencyClient chamado 1x");
         System.out.println("[DEBUG] ✓ item.product.brand=" + item.getProduct().brand());
+    }
+
+    @Test
+    @DisplayName("findOrdersByCustomerId não chama CurrencyClient quando moeda já é a de destino")
+    void findOrdersByCustomerId_MesmaMoeda_NaoChamaCurrencyClient() {
+        item.setCurrencyAtPurchase("BRL");
+
+        Page<OrderEntity> page = new PageImpl<>(List.of(order), pageable, 1);
+        when(orderRepository.findByCustomerId(1L, pageable)).thenReturn(page);
+        when(productClient.getProductById(1L)).thenReturn(productResponse);
+
+        Page<OrderEntity> result = orderService.findOrdersByCustomerId(1L, "BRL", pageable);
+        OrderEntity orderResult = result.getContent().get(0);
+
+        assertEquals(200.0, orderResult.getTotalPrice(), 0.001);
+        assertEquals(200.0, orderResult.getTotalConvertedPrice(), 0.001);
+        verify(currencyClient, never()).getCurrency(anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("findOrdersByCustomerId continua quando produto não existe mais")
+    void findOrdersByCustomerId_ProdutoIndisponivel_DeveUsarSnapshot() {
+        Page<OrderEntity> page = new PageImpl<>(List.of(order), pageable, 1);
+        when(orderRepository.findByCustomerId(1L, pageable)).thenReturn(page);
+        when(productClient.getProductById(1L)).thenThrow(new RuntimeException("Produto não encontrado"));
+        when(currencyClient.getCurrency("USD", "EUR")).thenReturn(currencyResponse);
+
+        currencyResponse.setTargetCurrency("EUR");
+        currencyResponse.setConversionRate(0.92);
+
+        Page<OrderEntity> result = orderService.findOrdersByCustomerId(1L, "EUR", pageable);
+        OrderEntity orderResult = result.getContent().get(0);
+
+        assertNotNull(item.getProduct());
+        assertEquals(1L, item.getProduct().id());
+        assertEquals(184.0, orderResult.getTotalConvertedPrice(), 0.001);
+    }
+
+    @Test
+    @DisplayName("findOrdersByCustomerId usa taxa 1.0 quando conversão falha")
+    void findOrdersByCustomerId_ConversaoFalha_DeveManterPrecoOriginal() {
+        item.setCurrencyAtPurchase("BRL");
+
+        Page<OrderEntity> page = new PageImpl<>(List.of(order), pageable, 1);
+        when(orderRepository.findByCustomerId(1L, pageable)).thenReturn(page);
+        when(productClient.getProductById(1L)).thenReturn(productResponse);
+        when(currencyClient.getCurrency("BRL", "EUR")).thenThrow(new RuntimeException("Currency not found"));
+
+        Page<OrderEntity> result = orderService.findOrdersByCustomerId(1L, "EUR", pageable);
+        OrderEntity orderResult = result.getContent().get(0);
+
+        assertEquals(200.0, orderResult.getTotalConvertedPrice(), 0.001);
     }
 }

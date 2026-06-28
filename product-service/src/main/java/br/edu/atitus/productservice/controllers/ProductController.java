@@ -77,9 +77,15 @@ public class ProductController {
                 entity.getImageURL(),
                 convertedPrice,
                 environment,
-                requestCurrency);
+                requestCurrency,
+                resolveCategoryId(entity.getCategoryId()),
+                entity.getSellerId());
 
         return ResponseEntity.ok(dto);
+    }
+
+    private Integer resolveCategoryId(Integer categoryId) {
+        return categoryId != null ? categoryId : 1;
     }
 
     @GetMapping("/noconverter/{idProduct}")
@@ -98,7 +104,9 @@ public class ProductController {
                 product.getImageURL(),
                 -1.,
                 "Product-service running on port: " + port,
-                null);
+                null,
+                resolveCategoryId(product.getCategoryId()),
+                product.getSellerId());
 
         return ResponseEntity.ok(dto);
     }
@@ -176,7 +184,9 @@ public class ProductController {
                     product.getImageURL(),
                     convertedPrice,
                     environment,
-                    targetCurrency);
+                    targetCurrency,
+                    resolveCategoryId(product.getCategoryId()),
+                    product.getSellerId());
         });
 
         return ResponseEntity.ok(productDTOs);

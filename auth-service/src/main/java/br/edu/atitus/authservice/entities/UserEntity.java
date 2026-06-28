@@ -39,6 +39,21 @@ public class UserEntity implements UserDetails{
     @Enumerated(EnumType.ORDINAL)
     private UserType type;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    private String street;
+    private String number;
+    private String complement;
+    private String neighborhood;
+    private String city;
+    private String state;
+
+    @Column(name = "zip_code")
+    private String zipCode;
+
+    private Double balance;
+
     public Long getId() {
         return id;
     }
@@ -77,6 +92,78 @@ public class UserEntity implements UserDetails{
 
     public void setType(UserType type) {
         this.type = type;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getComplement() {
+        return complement;
+    }
+
+    public void setComplement(String complement) {
+        this.complement = complement;
+    }
+
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public void setNeighborhood(String neighborhood) {
+        this.neighborhood = neighborhood;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
     @Override

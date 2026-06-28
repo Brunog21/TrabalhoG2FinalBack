@@ -20,6 +20,12 @@ public class ProductEntity {
     @Column(name = "image_url")
     private String imageURL;
 
+    @Column(name = "category_id")
+    private Integer categoryId;
+
+    @Column(name = "seller_id")
+    private Long sellerId;
+
     public String getImageURL() {
         return imageURL;
     }
@@ -82,5 +88,21 @@ public class ProductEntity {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Long getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(Long sellerId) {
+        this.sellerId = sellerId;
     }
 }

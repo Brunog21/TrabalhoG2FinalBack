@@ -34,6 +34,9 @@ public class WsProductController {
             throw new AuthenticationException("Usuário sem Permissão!");
 
         var product = convertDTOtoEntity(dto);
+        product.setCurrency("BRL");
+        product.setCategoryId(dto.categoryId() != null ? dto.categoryId() : 1);
+        product.setSellerId(userId);
         product.setStock(10);
         repository.save(product);
         return ResponseEntity.status(201).body(product);
@@ -51,6 +54,9 @@ public class WsProductController {
 
         var product = convertDTOtoEntity(dto);
         product.setId(idProduct);
+        product.setCurrency("BRL");
+        product.setCategoryId(dto.categoryId() != null ? dto.categoryId() : 1);
+        product.setSellerId(userId);
         product.setStock(10);
         repository.save(product);
         return ResponseEntity.ok(product);

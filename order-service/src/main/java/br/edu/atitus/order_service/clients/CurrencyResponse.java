@@ -8,7 +8,7 @@ public class CurrencyResponse {
 
 	private double conversionRate;
 
-	private String enviroment;
+	private String environment;
 
 	public String getSourceCurrency() {
 		return sourceCurrency;
@@ -34,11 +34,11 @@ public class CurrencyResponse {
 		this.conversionRate = conversionRate;
 	}
 
-	public String getEnviroment() {
-		return enviroment;
+	public String getEnvironment() {
+		return environment;
 	}
 
-	public void setEnviroment(String enviroment) {
-		this.enviroment = enviroment;
+	public void setEnvironment(String environment) {
+		this.environment = environment;
 	}
 }

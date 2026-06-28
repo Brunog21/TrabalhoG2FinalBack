@@ -4,6 +4,7 @@ import br.edu.atitus.currencyservice.clients.BCBClient;
 import br.edu.atitus.currencyservice.clients.BCBResponse;
 import br.edu.atitus.currencyservice.entities.CurrencyEntity;
 import br.edu.atitus.currencyservice.repositories.CurrencyRepository;
+import br.edu.atitus.currencyservice.services.CurrencyConversionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CurrencyController.class)
+@Import(CurrencyConversionService.class)
 @TestPropertySource(properties = {
         "eureka.client.enabled=false",
         "eureka.client.register-with-eureka=false",
@@ -215,5 +218,30 @@ class CurrencyControllerMvcTest {
                 .andExpect(status().isBadRequest());
 
         System.out.println("[DEBUG] ✓ 400 para request sem source");
+    }
+
+    @Test
+    @DisplayName("GET /currency/convert?source=BRL&target=USD → 200 OK com taxa inversa")
+    void getCurrency_BrlParaUsd_DeveRetornarTaxaInversa() throws Exception {
+        when(currencyRepository.findBySourceCurrencyAndTargetCurrency("BRL", "USD"))
+                .thenReturn(Optional.empty());
+        when(currencyRepository.findBySourceCurrencyAndTargetCurrency("USD", "BRL"))
+                .thenReturn(Optional.of(currencyEntity));
+        when(cache.get("USD")).thenReturn(null);
+
+        BCBResponse.BCBValue bcbValue = new BCBResponse.BCBValue();
+        bcbValue.setCotacaoVenda(5.00);
+        BCBResponse bcbResponse = new BCBResponse();
+        bcbResponse.setValue(List.of(bcbValue));
+        when(bcbClient.getCotacaoBcb(anyString(), anyString())).thenReturn(bcbResponse);
+
+        mockMvc.perform(get("/currency/convert")
+                        .param("source", "BRL")
+                        .param("target", "USD"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sourceCurrency").value("BRL"))
+                .andExpect(jsonPath("$.targetCurrency").value("USD"))
+                .andExpect(jsonPath("$.conversionRate").value(0.2));
     }
 }
