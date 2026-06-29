@@ -41,6 +41,7 @@ class WsProductControllerTest {
                 "iPhone 15",
                 "USD",
                 799.00,
+                10,
                 "https://example.com/iphone.jpg",
                 1
         );

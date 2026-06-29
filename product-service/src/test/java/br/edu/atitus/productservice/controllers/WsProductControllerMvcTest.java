@@ -48,6 +48,7 @@ class WsProductControllerMvcTest {
                 "model": "iPhone 15",
                 "currency": "USD",
                 "price": 799.00,
+                "stock": 10,
                 "imageURL": "https://example.com/iphone.jpg",
                 "categoryId": 1
             }

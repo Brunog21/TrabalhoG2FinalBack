@@ -37,7 +37,7 @@ public class WsProductController {
         product.setCurrency("BRL");
         product.setCategoryId(dto.categoryId() != null ? dto.categoryId() : 1);
         product.setSellerId(userId);
-        product.setStock(10);
+        product.setStock(product.getStock() != null ? product.getStock() : 0);
         repository.save(product);
         return ResponseEntity.status(201).body(product);
     }
@@ -57,7 +57,7 @@ public class WsProductController {
         product.setCurrency("BRL");
         product.setCategoryId(dto.categoryId() != null ? dto.categoryId() : 1);
         product.setSellerId(userId);
-        product.setStock(10);
+        product.setStock(product.getStock() != null ? product.getStock() : 0);
         repository.save(product);
         return ResponseEntity.ok(product);
     }

@@ -6,6 +6,7 @@ public record ProductInDTO(
         String model,
         String currency,
         Double price,
+        Integer stock,
         String imageURL,
         Integer categoryId
 ) {
